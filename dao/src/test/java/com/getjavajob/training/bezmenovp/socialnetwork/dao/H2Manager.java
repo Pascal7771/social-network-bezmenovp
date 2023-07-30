@@ -8,16 +8,17 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Properties;
 
 public class H2Manager {
 
-    private static final String propertiesPath = "C:/Users/Pasha/Desktop/dev/projects/getjavajob-training/" +
-            "social-network/dao/src/test/resources/PropertiesH2.properties";
-    private static final String SQLFileCreate = "C:/Users/Pasha/Desktop/dev/projects/getjavajob-training/" +
-            "social-network/dao/src/test/resources/createTables.sql";
-    private static final String SQLFileDrop = "C:/Users/Pasha/Desktop/dev/projects/getjavajob-training/" +
-            "social-network/dao/src/test/resources/dropTables.sql";
+    private static final String propertiesPath = Objects.requireNonNull(H2Manager.class.getClassLoader().
+            getResource("PropertiesH2.properties")).getPath();
+    private static final String SQLFileCreate = Objects.requireNonNull(H2Manager.class.getClassLoader().
+            getResource("createTables.sql")).getPath();
+    private static final String SQLFileDrop = Objects.requireNonNull(H2Manager.class.getClassLoader().
+            getResource("dropTables.sql")).getPath();
 
     public static void CreateTables() {
         try (FileInputStream fis1 = new FileInputStream(propertiesPath);

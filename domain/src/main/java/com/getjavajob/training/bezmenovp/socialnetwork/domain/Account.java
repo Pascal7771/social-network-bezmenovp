@@ -50,6 +50,25 @@ public class Account {
         this.accountAdditionalInformation = accountAdditionalInformation;
     }
 
+    public Account(String accountPassword, String accountSurname, String accountName, String accountPatronymic,
+                   LocalDate accountBirthDay, String accountPhone, String accountWorkPhone, String accountHomeAddress,
+                   String accountBusinessAddress, String accountEmail, String accountICQ, String accountSkype,
+                   String accountAdditionalInformation) {
+        this.accountPassword = accountPassword;
+        this.accountSurname = accountSurname;
+        this.accountName = accountName;
+        this.accountPatronymic = accountPatronymic;
+        this.accountBirthDay = accountBirthDay;
+        this.accountPhone = accountPhone;
+        this.accountWorkPhone = accountWorkPhone;
+        this.accountHomeAddress = accountHomeAddress;
+        this.accountBusinessAddress = accountBusinessAddress;
+        this.accountEmail = accountEmail;
+        this.accountICQ = accountICQ;
+        this.accountSkype = accountSkype;
+        this.accountAdditionalInformation = accountAdditionalInformation;
+    }
+
     public int getAccountID() {
         return accountID;
     }

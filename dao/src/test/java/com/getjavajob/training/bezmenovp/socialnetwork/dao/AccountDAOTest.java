@@ -73,13 +73,31 @@ public class AccountDAOTest {
     }
 
     @Test
-    public void getAccountById() {
+    public void getAccountByID() {
         try (AccountDAO accountDAO = new AccountDAO(propertiesPath);) {
             accountDAO.createAccount("PPP", "Pavlov",
                     "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
                     "Frunze 5", "Lenina 2", "myMail", "myICQ",
                     "mySkype", "myInformation");
-            Account actualAccount = accountDAO.getAccountById(1);
+            Account actualAccount = accountDAO.getAccountByID(1);
+            Account expectedAccount = new Account(1, "PPP", "Pavlov",
+                    "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
+                    "Frunze 5", "Lenina 2", "myMail", "myICQ",
+                    "mySkype", "myInformation");
+            assertEquals(expectedAccount, actualAccount);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void getAccountByEmail() {
+        try (AccountDAO accountDAO = new AccountDAO(propertiesPath);) {
+            accountDAO.createAccount("PPP", "Pavlov",
+                    "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
+                    "Frunze 5", "Lenina 2", "myMail", "myICQ",
+                    "mySkype", "myInformation");
+            Account actualAccount = accountDAO.getAccountByEmail("myMail");
             Account expectedAccount = new Account(1, "PPP", "Pavlov",
                     "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
                     "Frunze 5", "Lenina 2", "myMail", "myICQ",
@@ -125,6 +143,19 @@ public class AccountDAOTest {
     }
 
     @Test
+    public void deleteAccountByEmail() {
+        try (AccountDAO accountDAO = new AccountDAO(propertiesPath);) {
+            accountDAO.createAccount("PPP", "Pavlov",
+                    "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
+                    "Frunze 5", "Lenina 2", "myMail", "myICQ",
+                    "mySkype", "myInformation");
+            assertEquals(1, accountDAO.deleteAccountByEmail("myMail"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     public void addFriendAccountByID() {
         try (AccountDAO accountDAO = new AccountDAO(propertiesPath);) {
             Account firstAccount = accountDAO.createAccount("PPP", "Pavlov",
@@ -155,7 +186,7 @@ public class AccountDAOTest {
             accountDAO.addFriendAccountByID(1, 2);
             ArrayList<Integer> friendList = new ArrayList<>();
             friendList.add(2);
-            assertEquals(friendList, accountDAO.getFriendsAccountByID(1));
+            assertEquals(friendList, accountDAO.getFriendsAccountIDByID(1));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
