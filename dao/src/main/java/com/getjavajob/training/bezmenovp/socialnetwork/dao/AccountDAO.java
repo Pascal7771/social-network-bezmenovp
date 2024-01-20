@@ -33,6 +33,10 @@ public class AccountDAO implements AutoCloseable {
     private static final String DELETE_FRIEND_BY_ID = "DELETE FROM FRIENDS WHERE account_id_1 = ? AND account_id_2 = ?";
     private final ConnectionPool connectionPool;
 
+    public AccountDAO() {
+        connectionPool = new ConnectionPool(16);
+    }
+
     public AccountDAO(String propertiesPath) {
         connectionPool = ConnectionPool.getInstance(propertiesPath, 16);
     }

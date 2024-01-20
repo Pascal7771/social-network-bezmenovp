@@ -21,6 +21,10 @@ public class GroupDAO implements AutoCloseable {
     private static final String DELETE_BY_ID = "DELETE FROM GROUPS WHERE group_id = ?";
     private final ConnectionPool connectionPool;
 
+    public GroupDAO() {
+        connectionPool = new ConnectionPool(16);
+    }
+
     public GroupDAO(String propertiesPath) {
         connectionPool = ConnectionPool.getInstance(propertiesPath, 16);
     }
