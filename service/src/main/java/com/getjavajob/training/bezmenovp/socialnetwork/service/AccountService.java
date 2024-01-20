@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class AccountService {
 
@@ -17,10 +16,8 @@ public class AccountService {
     private final PhoneDAO phoneDAO;
 
     public AccountService() {
-        this.accountDAO = new AccountDAO(Objects.requireNonNull(getClass().getClassLoader().
-                getResource("PropertiesPG.properties")).getPath());
-        this.phoneDAO = new PhoneDAO(Objects.requireNonNull(getClass().getClassLoader().
-                getResource("PropertiesPG.properties")).getPath());
+        this.accountDAO = new AccountDAO();
+        this.phoneDAO = new PhoneDAO();
     }
 
     public AccountService(AccountDAO accountDAO, PhoneDAO phoneDAO) {
@@ -49,7 +46,12 @@ public class AccountService {
 
     public List<Account> getAllAccounts() {
         try {
-            return accountDAO.getAllAccounts();
+            List<Account> accountList = accountDAO.getAllAccounts();
+            for (Account account : accountList) {
+                account.setAccountPhone(phoneDAO.getPhoneByID(account.getAccountID()));
+                account.setAccountWorkPhone(phoneDAO.getWorkPhoneByID(account.getAccountID()));
+            }
+            return accountList;
         } catch (SQLException e) {
             System.err.println("SQL Exception: " + e.getMessage());
             return Collections.emptyList();

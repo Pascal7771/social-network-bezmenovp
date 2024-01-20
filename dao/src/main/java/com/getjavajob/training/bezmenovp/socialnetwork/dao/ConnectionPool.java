@@ -11,12 +11,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ConnectionPool {
 
     private static ConnectionPool instance;
-    private final String driver;
-    private final String url;
-    private final String username;
-    private final String password;
-    private final int poolSize;
-    private final LinkedBlockingQueue<Connection> connections;
+    private String driver;
+    private String url;
+    private String username;
+    private String password;
+    private int poolSize;
+    private LinkedBlockingQueue<Connection> connections;
 
     private ConnectionPool(String propertiesPath, int poolSize) {
         try (FileInputStream fis = new FileInputStream(propertiesPath)) {
@@ -31,6 +31,23 @@ public class ConnectionPool {
             initializePool();
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
+        }
+    }
+
+    public ConnectionPool(int poolSize) {
+        try {
+            Properties properties = new Properties();
+            properties.load(this.getClass().getClassLoader()
+                    .getResourceAsStream("PropertiesPG.properties"));
+            this.url = properties.getProperty("db.url");
+            this.username = properties.getProperty("db.username");
+            this.password = properties.getProperty("db.password");
+            this.driver = properties.getProperty("db.driver");
+            this.poolSize = poolSize;
+            this.connections = new LinkedBlockingQueue<>(poolSize);
+            initializePool();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -49,7 +66,7 @@ public class ConnectionPool {
                 connection.setAutoCommit(false);
                 connections.offer(connection);
             }
-        } catch (ClassNotFoundException | SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

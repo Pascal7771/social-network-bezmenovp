@@ -17,6 +17,10 @@ public class PhoneDAO implements AutoCloseable {
     private static final String DELETE_BY_ID = "DELETE FROM ACCOUNT_PHONES WHERE account_id = ?";
     private final ConnectionPool connectionPool;
 
+    public PhoneDAO() {
+        connectionPool = new ConnectionPool(16);
+    }
+
     public PhoneDAO(String propertiesPath) {
         connectionPool = ConnectionPool.getInstance(propertiesPath, 16);
     }
