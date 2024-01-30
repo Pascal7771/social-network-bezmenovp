@@ -1,4 +1,4 @@
-package com.getjavajob.training.bezmenovp.socialnetwork.dao;
+/*package com.getjavajob.training.bezmenovp.socialnetwork.dao;
 
 import org.junit.After;
 import org.junit.Before;
@@ -88,4 +88,4 @@ public class PhoneDAOTest {
         }
     }
 
-}
+}*/

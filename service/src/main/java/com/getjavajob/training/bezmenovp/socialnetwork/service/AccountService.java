@@ -5,6 +5,7 @@ import com.getjavajob.training.bezmenovp.socialnetwork.dao.AccountDAO;
 import com.getjavajob.training.bezmenovp.socialnetwork.dao.PhoneDAO;
 import com.getjavajob.training.bezmenovp.socialnetwork.domain.Account;
 
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -29,11 +30,11 @@ public class AccountService {
                                  String accountPatronymic, LocalDate accountBirthday, String accountPhone,
                                  String accountWorkPhone, String accountHomeAddress, String accountBusinessAddress,
                                  String accountEmail, String accountICQ, String accountSkype,
-                                 String accountAdditionalInformation) {
+                                 String accountAdditionalInformation, InputStream accountImage) {
         try {
             Account account = accountDAO.createAccount(accountPassword, accountSurname, accountName,
                     accountPatronymic, accountBirthday, accountHomeAddress, accountBusinessAddress, accountEmail,
-                    accountICQ, accountSkype, accountAdditionalInformation);
+                    accountICQ, accountSkype, accountAdditionalInformation, accountImage);
             phoneDAO.createPhones(accountPhone, accountWorkPhone, account.getAccountID());
             account.setAccountPhone(phoneDAO.getPhoneByID(account.getAccountID()));
             account.setAccountWorkPhone(phoneDAO.getWorkPhoneByID(account.getAccountID()));
@@ -86,11 +87,11 @@ public class AccountService {
                                      String accountPatronymic, LocalDate accountBirthday, String accountPhone,
                                      String accountWorkPhone, String accountHomeAddress, String accountBusinessAddress,
                                      String accountEmail, String accountICQ, String accountSkype,
-                                     String accountAdditionalInformation, int accountID) {
+                                     String accountAdditionalInformation, InputStream accountImage, int accountID) {
         try {
             Account account = accountDAO.updateAccountByID(accountPassword, accountSurname, accountName,
                     accountPatronymic, accountBirthday, accountHomeAddress, accountBusinessAddress, accountEmail,
-                    accountICQ, accountSkype, accountAdditionalInformation, accountID);
+                    accountICQ, accountSkype, accountAdditionalInformation, accountImage, accountID);
             phoneDAO.updatePhonesByID(accountPhone, accountWorkPhone, accountID);
             account.setAccountPhone(phoneDAO.getPhoneByID(account.getAccountID()));
             account.setAccountWorkPhone(phoneDAO.getWorkPhoneByID(account.getAccountID()));

@@ -19,6 +19,7 @@ public class Account {
     private String accountICQ;
     private String accountSkype;
     private String accountAdditionalInformation;
+    private byte[] accountImage;
 
     public Account() {
     }
@@ -179,6 +180,14 @@ public class Account {
 
     public void setAccountAdditionalInformation(String accountAdditionalInformation) {
         this.accountAdditionalInformation = accountAdditionalInformation;
+    }
+
+    public byte[] getAccountImage() {
+        return accountImage;
+    }
+
+    public void setAccountImage(byte[] accountImage) {
+        this.accountImage = accountImage;
     }
 
     @Override

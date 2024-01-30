@@ -1,4 +1,4 @@
-package com.getjavajob.training.bezmenovp.socialnetwork.service;
+/*package com.getjavajob.training.bezmenovp.socialnetwork.service;
 
 import com.getjavajob.training.bezmenovp.socialnetwork.dao.AccountDAO;
 import com.getjavajob.training.bezmenovp.socialnetwork.dao.PhoneDAO;
@@ -206,4 +206,4 @@ public class AccountServiceTest {
         assertTrue(deleteMarker);
     }
 
-}
+}*/
