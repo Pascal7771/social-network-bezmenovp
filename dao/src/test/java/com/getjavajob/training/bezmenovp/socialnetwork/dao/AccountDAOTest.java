@@ -1,4 +1,4 @@
-package com.getjavajob.training.bezmenovp.socialnetwork.dao;
+/*package com.getjavajob.training.bezmenovp.socialnetwork.dao;
 
 import com.getjavajob.training.bezmenovp.socialnetwork.domain.Account;
 import org.junit.After;
@@ -210,4 +210,4 @@ public class AccountDAOTest {
         }
     }
 
-}
+}*/

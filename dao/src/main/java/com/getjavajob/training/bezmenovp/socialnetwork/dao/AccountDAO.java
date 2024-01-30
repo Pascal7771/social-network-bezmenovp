@@ -2,6 +2,7 @@ package com.getjavajob.training.bezmenovp.socialnetwork.dao;
 
 import com.getjavajob.training.bezmenovp.socialnetwork.domain.Account;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -17,14 +18,14 @@ public class AccountDAO implements AutoCloseable {
 
     private static final String CREATE = "INSERT INTO ACCOUNTS (account_password, account_surname, account_name, " +
             "account_patronymic, account_birthday, account_home_address, account_business_address, account_email, " +
-            "account_icq, account_skype, account_additional_information) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "account_icq, account_skype, account_additional_information, account_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SELECT_ALL = "SELECT * FROM ACCOUNTS";
     private static final String SELECT_BY_ID = "SELECT * FROM ACCOUNTS WHERE account_id = ?";
     private static final String SELECT_BY_EMAIL = "SELECT * FROM ACCOUNTS WHERE account_email = ?";
     private static final String UPDATE_BY_ID = "UPDATE ACCOUNTS SET account_password = ?, account_surname = ?," +
             "account_name = ?, account_patronymic = ?, account_birthday = ?, account_home_address = ?," +
             "account_business_address = ?, account_email = ?, account_icq = ?, account_skype = ?," +
-            "account_additional_information= ? WHERE account_id = ?";
+            "account_additional_information= ?, account_image = ? WHERE account_id = ?";
     private static final String DELETE_BY_ID = "DELETE FROM ACCOUNTS WHERE account_id = ?";
     private static final String DELETE_BY_EMAIL = "DELETE FROM ACCOUNTS WHERE account_email = ?";
     private static final String ADD_FRIEND_BY_ID = "INSERT INTO FRIENDS (account_id_1, account_id_2)" +
@@ -60,13 +61,14 @@ public class AccountDAO implements AutoCloseable {
         account.setAccountICQ(resultSet.getString("account_icq"));
         account.setAccountSkype(resultSet.getString("account_skype"));
         account.setAccountAdditionalInformation(resultSet.getString("account_additional_information"));
+        account.setAccountImage(resultSet.getBytes("account_image"));
         return account;
     }
 
     public Account createAccount(String accountPassword, String accountSurname, String accountName,
                                  String accountPatronymic, LocalDate accountBirthday, String accountHomeAddress,
                                  String accountBusinessAddress, String accountEmail, String accountICQ,
-                                 String accountSkype, String accountAdditionalInformation) throws SQLException {
+                                 String accountSkype, String accountAdditionalInformation, InputStream accountImage) throws SQLException {
         int accountID = 0;
         Connection connection = connectionPool.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(CREATE, RETURN_GENERATED_KEYS)) {
@@ -81,6 +83,7 @@ public class AccountDAO implements AutoCloseable {
             preparedStatement.setString(9, accountICQ);
             preparedStatement.setString(10, accountSkype);
             preparedStatement.setString(11, accountAdditionalInformation);
+            preparedStatement.setBinaryStream(12, accountImage);
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
                 if (resultSet.next()) {
@@ -153,7 +156,7 @@ public class AccountDAO implements AutoCloseable {
     public Account updateAccountByID(String accountPassword, String accountSurname, String accountName,
                                      String accountPatronymic, LocalDate accountBirthday, String accountHomeAddress,
                                      String accountBusinessAddress, String accountEmail, String accountICQ,
-                                     String accountSkype, String accountAdditionalInformation,
+                                     String accountSkype, String accountAdditionalInformation, InputStream accountImage,
                                      int accountID) throws SQLException {
         Connection connection = connectionPool.getConnection();
         try (PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_BY_ID)) {
@@ -168,7 +171,8 @@ public class AccountDAO implements AutoCloseable {
             preparedStatement.setString(9, accountICQ);
             preparedStatement.setString(10, accountSkype);
             preparedStatement.setString(11, accountAdditionalInformation);
-            preparedStatement.setInt(12, accountID);
+            preparedStatement.setBinaryStream(12, accountImage);
+            preparedStatement.setInt(13, accountID);
             preparedStatement.executeUpdate();
             connection.commit();
             return getAccountByID(accountID);
