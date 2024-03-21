@@ -1,5 +1,5 @@
-Social Network, July 2023  
+Social Network
+
 _  
+
 **Bezmenov Pavel**  
-Training getJavaJob  
-http://www.getjavajob.com  

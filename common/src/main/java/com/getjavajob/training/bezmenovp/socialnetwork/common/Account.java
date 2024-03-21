@@ -1,4 +1,4 @@
-package com.getjavajob.training.bezmenovp.socialnetwork.domain;
+package com.getjavajob.training.bezmenovp.socialnetwork.common;
 
 import lombok.*;
 import org.springframework.stereotype.Component;
