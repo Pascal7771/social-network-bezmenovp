@@ -14,7 +14,7 @@ import java.util.Properties;
 public class H2Manager {
 
     private static final String propertiesPath = Objects.requireNonNull(H2Manager.class.getClassLoader().
-            getResource("PropertiesH2.properties")).getPath();
+            getResource("properties.properties")).getPath();
     private static final String SQLFileCreate = Objects.requireNonNull(H2Manager.class.getClassLoader().
             getResource("createTables.sql")).getPath();
     private static final String SQLFileDrop = Objects.requireNonNull(H2Manager.class.getClassLoader().

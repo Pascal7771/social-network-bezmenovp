@@ -1,5 +1,1 @@
-drop table friends;
-drop table accounts_groups;
-drop table groups;
-drop table account_phones;
-drop table accounts;
+drop table ACCOUNT, GROUP_MESSAGE, GROUP_MEMBER, GROUP_INVITE, GROUP_TBL, INVITES, PHONES, FRIENDS, MESSAGE;

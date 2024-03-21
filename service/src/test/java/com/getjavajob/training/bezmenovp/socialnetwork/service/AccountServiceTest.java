@@ -1,209 +1,138 @@
-/*package com.getjavajob.training.bezmenovp.socialnetwork.service;
+package com.getjavajob.training.bezmenovp.socialnetwork.service;
 
-import com.getjavajob.training.bezmenovp.socialnetwork.dao.AccountDAO;
-import com.getjavajob.training.bezmenovp.socialnetwork.dao.PhoneDAO;
-import com.getjavajob.training.bezmenovp.socialnetwork.domain.Account;
-import org.junit.Before;
+import com.getjavajob.training.bezmenovp.socialnetwork.common.Account;
+import com.getjavajob.training.bezmenovp.socialnetwork.common.Group;
+import com.getjavajob.training.bezmenovp.socialnetwork.common.Roles;
+import com.getjavajob.training.bezmenovp.socialnetwork.dao.datajpa.repository.AccountMemberRepositoryImp;
+import com.getjavajob.training.bezmenovp.socialnetwork.dao.datajpa.repository.AccountRepositoryImp;
+import com.getjavajob.training.bezmenovp.socialnetwork.dao.dto.util.ValidateException;
+import com.getjavajob.training.bezmenovp.socialnetwork.service.resources.ServiceConfig;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ContextConfiguration(classes = ServiceConfig.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(properties = "spring.main.lazy-initialization=true")
+@AutoConfigureMockMvc
 public class AccountServiceTest {
-
-    @Mock
-    private AccountDAO accountDAO;
-    @Mock
-    private PhoneDAO phoneDAO;
+    @InjectMocks
     private AccountService accountService;
+    @Mock
+    private AccountRepositoryImp accountRepositoryImp;
+    @Mock
+    private AccountMemberRepositoryImp accountMemberRepositoryImp;
+    @Mock
+    private AccountValidator validator;
 
-    @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        accountService = new AccountService(accountDAO, phoneDAO);
+    private Account createAccount() {
+        return Account.builder()
+                .surname("Vasin")
+                .name("Igor")
+                .patronymic("ivanov")
+                .email("samara@mail.ru")
+                .password("147")
+                .birthDay(LocalDate.parse("2005-10-21"))
+                .phone("9853671523")
+                .workPhone("9853671523")
+                .address("Spb")
+                .workAddress("Spb")
+                .skype("40")
+                .icq("5697")
+                .additionally("")
+                .role(Roles.USER)
+                .build();
     }
 
     @Test
-    public void createAccount() throws SQLException {
-        Account expectedAccount = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        when(accountDAO.createAccount("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "Frunze 5", "Lenina 2", "myMail", "myICQ",
-                "mySkype", "myInformation")).thenReturn(expectedAccount);
-        Account actualAccount = accountService.createAccount("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        verify(accountDAO).createAccount("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "Frunze 5", "Lenina 2", "myMail", "myICQ",
-                "mySkype", "myInformation");
-        assertEquals(expectedAccount, actualAccount);
+    public void createAccountTest() throws ValidateException {
+        Account account = createAccount();
+        when(accountRepositoryImp.create(account)).thenReturn(account);
+        assertEquals(account, accountService.create(account));
     }
 
     @Test
-    public void getAllAccounts() throws SQLException {
-        Account account = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        List<Account> expectedAccounts = new ArrayList<>();
-        expectedAccounts.add(account);
-        when(accountDAO.getAllAccounts()).thenReturn(expectedAccounts);
-        List<Account> actualAccounts = accountService.getAllAccounts();
-        verify(accountDAO).getAllAccounts();
-        assertEquals(expectedAccounts, actualAccounts);
+    public void updateAccountTest() throws ValidateException {
+        Account account = createAccount();
+        when(accountRepositoryImp.create(account)).thenReturn(account);
+        when(accountRepositoryImp.getById(account.getId())).thenReturn(account);
+        assertEquals(account, accountService.update(account));
     }
 
     @Test
-    public void getAccountByID() throws SQLException {
-        Account expectedAccount = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        when(accountDAO.getAccountByID(1)).thenReturn(expectedAccount);
-        Account actualAccount = accountService.getAccountByID(1);
-        verify(accountDAO).getAccountByID(1);
-        assertEquals(expectedAccount, actualAccount);
+    public void getAllTest() {
+        Account account = createAccount();
+        List<Account> accountList = new ArrayList<>();
+        accountList.add(account);
+        when(accountRepositoryImp.getAll()).thenReturn(accountList);
+        assertEquals(accountList, accountService.getAll());
     }
 
     @Test
-    public void getAccountByEmail() throws SQLException {
-        Account account = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        when(accountDAO.getAccountByEmail("myMail")).thenReturn(account);
-        Account actualAccount = accountService.getAccountByEmail("myMail");
-        verify(accountDAO).getAccountByEmail("myMail");
-        assertEquals(account, actualAccount);
+    public void getByIdTest() {
+        Account account = createAccount();
+        when(accountRepositoryImp.getById(account.getId())).thenReturn(account);
+        assertEquals(account, accountService.getById(account.getId()));
     }
 
     @Test
-    public void updateAccountByID() throws SQLException {
-        Account expectedAccount = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        when(accountDAO.updateAccountByID("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "Frunze 5", "Lenina 2", "myMail",
-                "myICQ", "mySkype", "myInformation",
-                1)).thenReturn(expectedAccount);
-        Account actualAccount = accountService.updateAccountByID("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5", "Lenina 2",
-                "myMail", "myICQ", "mySkype", "myInformation",
-                1);
-        verify(accountDAO).updateAccountByID("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "Frunze 5", "Lenina 2", "myMail",
-                "myICQ", "mySkype", "myInformation",
-                1);
-        assertEquals(expectedAccount, actualAccount);
+    public void getByEmailTest() {
+        Account account = createAccount();
+        when(accountRepositoryImp.getByEmail(account.getEmail())).thenReturn(account);
+        assertEquals(account, accountService.getByEmail(account.getEmail()));
     }
 
     @Test
-    public void deleteAccountByID() throws SQLException {
-        Account account = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        when(accountDAO.deleteAccountByID(account.getAccountID())).thenReturn(1);
-        int deleteCounter = accountService.deleteAccountByID(account.getAccountID());
-        verify(accountDAO).deleteAccountByID(account.getAccountID());
-        assertEquals(1, deleteCounter);
+    public void deleteByIdTest() {
+        Account account = createAccount();
+        when(accountRepositoryImp.deleteById(account.getId())).thenReturn(true);
+        assertTrue(accountService.deleteById(account.getId()));
     }
 
     @Test
-    public void deleteAccountByEmail() throws SQLException {
-        Account account = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        when(accountDAO.getAccountByEmail(account.getAccountEmail())).thenReturn(account);
-        when(accountDAO.deleteAccountByEmail(account.getAccountEmail())).thenReturn(1);
-        int deleteCounter = accountService.deleteAccountByEmail(account.getAccountEmail());
-        verify(phoneDAO, times(1)).deletePhonesByID(account.getAccountID());
-        verify(accountDAO, times(1)).deleteAccountByEmail(account.getAccountEmail());
-        assertEquals(1, deleteCounter);
+    public void getFriendsTest() {
+        Account account = createAccount();
+        List<Account> accountList = account.getAccountFriends();
+        when(accountMemberRepositoryImp.getMembers(account.getId())).thenReturn(account);
+        assertEquals(accountList, accountService.getFriends(account.getId()));
     }
 
     @Test
-    public void addFriendAccountByID() throws SQLException {
-        Account account1 = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        Account account2 = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        when(accountDAO.addFriendAccountByID(account1.getAccountID(), account2.getAccountID())).thenReturn(true);
-        boolean addMarker = accountService.addFriendAccountByID(account1.getAccountID(), account2.getAccountID());
-        verify(accountDAO).addFriendAccountByID(account1.getAccountID(), account2.getAccountID());
-        assertTrue(addMarker);
+    public void getAccountGroupsTest() {
+        Account account = createAccount();
+        Set<Group> groupList = account.getAccountGroup();
+        when(accountRepositoryImp.getAccountGroupsList(account.getId())).thenReturn(account);
+        assertEquals(groupList, accountService.getAccountGroupsList(account.getId()));
     }
 
     @Test
-    public void getFriendsAccountIDByID() throws SQLException {
-        Account account1 = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        Account account2 = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        List<Integer> expectedFriendList = new ArrayList<>();
-        expectedFriendList.add(account2.getAccountID());
-        when(accountDAO.getFriendsAccountIDByID(account1.getAccountID())).thenReturn(expectedFriendList);
-        List<Integer> actualFriendList = accountService.getFriendsAccountIDByID(account1.getAccountID());
-        verify(accountDAO).getFriendsAccountIDByID(account1.getAccountID());
-        assertEquals(expectedFriendList, actualFriendList);
+    public void getInvitesTest() {
+        Account account = createAccount();
+        List<Account> accountList = account.getAccountInvites();
+        when(accountMemberRepositoryImp.getInvites(account.getId())).thenReturn(account);
+        assertEquals(accountList, accountService.getInvites(account.getId()));
     }
 
     @Test
-    public void deleteFriendshipByID() throws SQLException {
-        Account account1 = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        Account account2 = new Account("PPP", "Pavlov",
-                "Pavel12", "Pavlovich", LocalDate.of(1992, 05, 15),
-                "123123", "123123", "Frunze 5",
-                "Lenina 2", "myMail", "myICQ", "mySkype",
-                "myInformation");
-        when(accountDAO.deleteFriendshipByID(account1.getAccountID(), account2.getAccountID())).thenReturn(true);
-        boolean deleteMarker = accountService.deleteFriendshipByID(account1.getAccountID(), account2.getAccountID());
-        verify(accountDAO).deleteFriendshipByID(account1.getAccountID(), account2.getAccountID());
-        assertTrue(deleteMarker);
+    public void getOutgoingInvitesTest() {
+        Account account = createAccount();
+        List<Account> accountList = account.getAccountOutgoingInvites();
+        when(accountMemberRepositoryImp.getOutgoingInvites(account.getId())).thenReturn(account);
+        assertEquals(accountList, accountService.getOutgoingInvites(account.getId()));
     }
 
-}*/
+}

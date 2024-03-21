@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class GroupDAOTest {
 
     private static final String propertiesPath = "C:/Users/Pasha/Desktop/dev/projects/getjavajob-training/" +
-            "social-network/dao/src/test/resources/PropertiesH2.properties";
+            "social-network/dao/src/test/resources/properties.properties";
 
     @Before
     public void setUp() {
