@@ -1,155 +1,123 @@
 package com.getjavajob.training.bezmenovp.socialnetwork.service;
 
+import com.getjavajob.training.bezmenovp.socialnetwork.common.Account;
+import com.getjavajob.training.bezmenovp.socialnetwork.common.Group;
+import com.getjavajob.training.bezmenovp.socialnetwork.dao.datajpa.repository.AccountMemberRepositoryImp;
+import com.getjavajob.training.bezmenovp.socialnetwork.dao.datajpa.repository.AccountRepositoryImp;
+import com.getjavajob.training.bezmenovp.socialnetwork.dao.datajpa.repository.AccountRepositoryManager;
+import com.getjavajob.training.bezmenovp.socialnetwork.dao.dto.util.ValidateException;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.getjavajob.training.bezmenovp.socialnetwork.dao.AccountDAO;
-import com.getjavajob.training.bezmenovp.socialnetwork.dao.PhoneDAO;
-import com.getjavajob.training.bezmenovp.socialnetwork.domain.Account;
-
+import javax.xml.bind.JAXBException;
 import java.io.InputStream;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+@Service
+@AllArgsConstructor
 public class AccountService {
+    private AccountValidator accountValidator;
+    private AccountRepositoryImp accountRepositoryImp;
+    private AccountMemberRepositoryImp accountMemberRepositoryImp;
+    private AccountRepositoryManager accountRepositoryManager;
 
-    private final AccountDAO accountDAO;
-    private final PhoneDAO phoneDAO;
-
-    public AccountService() {
-        this.accountDAO = new AccountDAO();
-        this.phoneDAO = new PhoneDAO();
+    @Transactional
+    public Account create(Account accountRequest) throws ValidateException {
+        accountValidator.validateAccount(accountRequest);
+        return accountRepositoryImp.create(accountRequest);
     }
 
-    public AccountService(AccountDAO accountDAO, PhoneDAO phoneDAO) {
-        this.accountDAO = accountDAO;
-        this.phoneDAO = phoneDAO;
+    @Transactional
+    public Account update(Account accountRequest) throws ValidateException {
+        accountValidator.validateAccount(accountRequest);
+        accountRepositoryImp.create(accountRequest);
+        return accountRepositoryImp.getById(accountRequest.getId());
     }
 
-    public Account createAccount(String accountPassword, String accountSurname, String accountName,
-                                 String accountPatronymic, LocalDate accountBirthday, String accountPhone,
-                                 String accountWorkPhone, String accountHomeAddress, String accountBusinessAddress,
-                                 String accountEmail, String accountICQ, String accountSkype,
-                                 String accountAdditionalInformation, InputStream accountImage) {
+    @Transactional
+    public List<Account> getAll() {
+        return accountRepositoryImp.getAll();
+    }
+
+    public Account getByEmail(String email) {
+        return accountRepositoryImp.getByEmail(email);
+    }
+
+    @Transactional
+    public Account getById(int id) {
+        return accountRepositoryImp.getById(id);
+    }
+
+    public Page<Account> getBySubStr(String subStr, Pageable pageNumber) {
+        return accountRepositoryImp.findByTagName(subStr, pageNumber);
+    }
+
+    public List<Account> getBySubStr(String subStr) {
+        return accountRepositoryImp.getBySubSrt(subStr);
+    }
+
+    @Transactional
+    public boolean deleteById(int id) {
         try {
-            Account account = accountDAO.createAccount(accountPassword, accountSurname, accountName,
-                    accountPatronymic, accountBirthday, accountHomeAddress, accountBusinessAddress, accountEmail,
-                    accountICQ, accountSkype, accountAdditionalInformation, accountImage);
-            phoneDAO.createPhones(accountPhone, accountWorkPhone, account.getAccountID());
-            account.setAccountPhone(phoneDAO.getPhoneByID(account.getAccountID()));
-            account.setAccountWorkPhone(phoneDAO.getWorkPhoneByID(account.getAccountID()));
-            return account;
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            return null;
-        }
-    }
-
-    public List<Account> getAllAccounts() {
-        try {
-            List<Account> accountList = accountDAO.getAllAccounts();
-            for (Account account : accountList) {
-                account.setAccountPhone(phoneDAO.getPhoneByID(account.getAccountID()));
-                account.setAccountWorkPhone(phoneDAO.getWorkPhoneByID(account.getAccountID()));
-            }
-            return accountList;
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-    public Account getAccountByID(int accountID) {
-        try {
-            Account account = accountDAO.getAccountByID(accountID);
-            account.setAccountPhone(phoneDAO.getPhoneByID(account.getAccountID()));
-            account.setAccountWorkPhone(phoneDAO.getWorkPhoneByID(account.getAccountID()));
-            return account;
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            return null;
-        }
-    }
-
-    public Account getAccountByEmail(String accountEmail) {
-        try {
-            Account account = accountDAO.getAccountByEmail(accountEmail);
-            account.setAccountPhone(phoneDAO.getPhoneByID(account.getAccountID()));
-            account.setAccountWorkPhone(phoneDAO.getWorkPhoneByID(account.getAccountID()));
-            return account;
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            return null;
-        }
-    }
-
-    public Account updateAccountByID(String accountPassword, String accountSurname, String accountName,
-                                     String accountPatronymic, LocalDate accountBirthday, String accountPhone,
-                                     String accountWorkPhone, String accountHomeAddress, String accountBusinessAddress,
-                                     String accountEmail, String accountICQ, String accountSkype,
-                                     String accountAdditionalInformation, InputStream accountImage, int accountID) {
-        try {
-            Account account = accountDAO.updateAccountByID(accountPassword, accountSurname, accountName,
-                    accountPatronymic, accountBirthday, accountHomeAddress, accountBusinessAddress, accountEmail,
-                    accountICQ, accountSkype, accountAdditionalInformation, accountImage, accountID);
-            phoneDAO.updatePhonesByID(accountPhone, accountWorkPhone, accountID);
-            account.setAccountPhone(phoneDAO.getPhoneByID(account.getAccountID()));
-            account.setAccountWorkPhone(phoneDAO.getWorkPhoneByID(account.getAccountID()));
-            return account;
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            return null;
-        }
-    }
-
-    public int deleteAccountByID(int accountID) {
-        try {
-            return accountDAO.deleteAccountByID(accountID);
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            return -1;
-        }
-    }
-
-    public int deleteAccountByEmail(String accountEmail) {
-        try {
-            phoneDAO.deletePhonesByID(accountDAO.getAccountByEmail(accountEmail).getAccountID());
-            return accountDAO.deleteAccountByEmail(accountEmail);
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            return -1;
-        }
-    }
-
-    public boolean addFriendAccountByID(int accountID, int friendID) {
-        if (!getFriendsAccountIDByID(accountID).contains(friendID)) {
-            try {
-                accountDAO.addFriendAccountByID(accountID, friendID);
-                return true;
-            } catch (SQLException e) {
-                System.err.println("SQL Exception: " + e.getMessage());
-            }
-        }
-        return false;
-    }
-
-    public List<Integer> getFriendsAccountIDByID(int accountID) {
-        try {
-            return accountDAO.getFriendsAccountIDByID(accountID);
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-
-    public boolean deleteFriendshipByID(int accountID, int friendID) {
-        try {
-            accountDAO.deleteFriendshipByID(accountID, friendID);
+            accountRepositoryImp.deleteById(id);
             return true;
-        } catch (SQLException e) {
-            System.err.println("SQL Exception: " + e.getMessage());
+        } catch (Exception e) {
             return false;
         }
+    }
+
+    @Transactional
+    public List<Account> getFriends(int id) {
+        Account account = accountMemberRepositoryImp.getMembers(id);
+        return account.getAccountFriends();
+    }
+
+    public Set<Group> getAccountGroupsList(int id) {
+        return accountRepositoryImp.getAccountGroupsList(id).getAccountGroup();
+    }
+
+    @Transactional
+    public void addFriend(int accountId, int friendId) {
+        if (!getFriends(accountId).contains(accountId)) {
+            accountRepositoryManager.acceptInvite(accountId, friendId);
+        }
+    }
+
+    @Transactional
+    public void deleteFriend(int accountId, int friendId) {
+        accountRepositoryManager.deleteFriend(accountId, friendId);
+    }
+
+    @Transactional
+    public void invite(int idInviter, int friendId) {
+        accountMemberRepositoryImp.invite(idInviter, friendId);
+    }
+
+    @Transactional
+    public void rejectInvite(int inviterId, int accountId) {
+        accountMemberRepositoryImp.rejectInvite(inviterId, accountId);
+    }
+
+    @Transactional
+    public Account convertFromXml(int id, InputStream fileInputStream) throws JAXBException {
+        return accountRepositoryManager.convertFromXml(id, fileInputStream);
+    }
+
+    public List<Account> getInvites(int id) {
+        return accountMemberRepositoryImp.getInvites(id).getAccountInvites();
+    }
+
+    public List<Account> getOutgoingInvites(int accountId) {
+        return accountMemberRepositoryImp.getOutgoingInvites(accountId).getAccountOutgoingInvites();
+    }
+
+    @Transactional
+    public void makeAdmin(int id) {
+        accountRepositoryImp.makeAdmin(id);
     }
 
 }
